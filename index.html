@@ -41,8 +41,9 @@ body::before {
 }
 
 .quiz-container {
-    width: 700px;
-    padding: 40px;
+    width: 95%;              /* Takes up 95% of the screen on small phones */
+    max-width: 700px;        /* Stops growing at 700px on desktop */
+    padding: 30px 20px;      /* Slightly smaller padding for better fit */
     backdrop-filter: blur(15px);
     background: rgba(255,255,255,0.05);
     border-radius: 20px;
@@ -50,6 +51,7 @@ body::before {
     position: relative;
     z-index: 2;
     text-align: center;
+    margin: 10px;            /* Adds a tiny gap so it doesn't touch screen edges */
 }
 
 button {
@@ -306,4 +308,5 @@ function showResult(){
 
 </body>
 </html>
+
 
