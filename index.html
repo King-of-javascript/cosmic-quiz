@@ -145,6 +145,30 @@ const correctSnd = document.getElementById("correctSound");
 const wrongSnd = document.getElementById("wrongSound");
 ambient.volume = 0.3; 
 
+// --- MOBILE TOUCH UNLOCKER ---
+// This function forces all audio to "wake up" on the very first touch/click
+function unlockAudio() {
+    [ambient, correctSnd, wrongSnd].forEach(sound => {
+        const playPromise = sound.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                // If SFX, pause immediately so they're ready for the quiz
+                if (sound !== ambient) {
+                    sound.pause();
+                    sound.currentTime = 0;
+                }
+            }).catch(e => console.log("Unlock waiting for gesture"));
+        }
+    });
+    // Remove listeners once unlocked to stay clean
+    window.removeEventListener('touchstart', unlockAudio);
+    window.removeEventListener('click', unlockAudio);
+}
+
+// Add listeners to catch the VERY FIRST interaction anywhere on the screen
+window.addEventListener('touchstart', unlockAudio);
+window.addEventListener('click', unlockAudio);
+
 const basicQuiz = [
     { question: "How many moons does Mars have?", options: ["1", "2", "4", "8"], correct: 1 },
     { question: "Which planet is closest to Earth?", options: ["Venus", "Mars", "Mercury", "Jupiter"], correct: 0 },
@@ -171,19 +195,8 @@ let currentQuestion = 0;
 let score = 0;
 
 function startQuiz(mode) {
-    // --- MOBILE AUDIO PRIMER (Crucial for iOS/Android) ---
-    [ambient, correctSnd, wrongSnd].forEach(sound => {
-        const playPromise = sound.play();
-        if (playPromise !== undefined) {
-            playPromise.then(() => {
-                // If it's the SFX (not music), pause and reset immediately
-                if (sound !== ambient) {
-                    sound.pause();
-                    sound.currentTime = 0;
-                }
-            }).catch(e => console.log("Audio prep:", e));
-        }
-    });
+    // Call unlock again just to be safe on button click
+    unlockAudio();
 
     quizData = mode === 'basic' ? basicQuiz : masterQuiz;
     currentQuestion = 0;
